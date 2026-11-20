@@ -56,7 +56,7 @@
       <section class="hero">
         <div class="eyebrow" style="color:#b8c9da">2027 广东省考 · 常识专项</div>
         <h1>每天刷一点，考场稳一点。</h1>
-        <p>题库${bank.questions.length}道 · 覆盖PDF第6—42页 · 支持离线练习</p>
+        <p>${bank.questions.length}道选词填空 · 覆盖PDF第6—42页 · 支持离线练习</p>
         <div class="hero-actions"><button class="btn btn-primary" onclick="App.startRandom(20)">开始随机刷题</button><button class="btn btn-light" onclick="App.startExam(100)">100题模拟考试</button></div>
       </section>
       <div class="stats-grid">
@@ -83,7 +83,7 @@
   }
   function chapterCard(cat){const p=progressFor(cat);return `<button class="chapter-card" onclick="App.startCategory('${encodeURIComponent(cat)}')"><span class="chapter-title">${esc(cat)}</span><div class="mini-track"><i style="width:${p.pct}%"></i></div><span class="chapter-meta"><span>${p.total}道题</span><span>${p.done}/${p.total}已练</span></span></button>`;}
   function renderChapters(){
-    return `<h1 class="page-title">章节练习</h1><p class="page-subtitle">按资料章节系统复习。每道题均标注原PDF页码。</p>
+    return `<h1 class="page-title">章节练习</h1><p class="page-subtitle">按资料章节进行选词填空练习。每题均为四选一，并标注原PDF页码。</p>
       <div class="searchbar"><input id="searchInput" placeholder="搜索知识点、题干或选项…" value="${esc(searchText)}" oninput="App.search(this.value)"></div>
       <div class="chapter-list">${categories().map(cat=>chapterCard(cat)).join('')}</div>
       <div class="section-head"><h2>搜索结果</h2><span style="font-size:11px;color:var(--muted)">${searchText?filteredQuestions().length+'道':'输入关键词查题'}</span></div>
@@ -110,7 +110,7 @@
       ${recent.length?`<div class="result-list">${recent.map(a=>{const q=bank.questions.find(x=>x.id===a.id);return `<div class="result-item"><strong>${a.correct?'✓':'✕'} ${esc(q?.question||'题目')}</strong><span style="color:var(--muted)">${esc(q?.category||'')} · ${new Date(a.at).toLocaleString('zh-CN')}</span></div>`}).join('')}</div>`:'<div class="empty">完成第一道题后，这里会显示答题记录。</div>'}
       <div class="section-head"><h2>数据管理</h2></div><div class="panel"><div class="settings-row"><span>导出答题记录备份</span><button class="btn btn-outline btn-small" onclick="App.exportBackup()">导出JSON</button></div><div class="settings-row"><span>导入已有备份</span><button class="btn btn-outline btn-small" onclick="App.importBackup()">选择文件</button></div><div class="settings-row"><span>每日刷题目标</span><button class="btn btn-outline btn-small" onclick="App.go('settings')">设置</button></div><div class="settings-row"><span>清空本机答题记录</span><button class="btn btn-danger btn-small" onclick="App.clearData()">清空</button></div></div>`;
   }
-  function renderSettings(){return `<h1 class="page-title">设置</h1><p class="page-subtitle">调整每日目标，并管理本机学习数据。</p><div class="panel"><div class="settings-row"><label for="goalInput">每日刷题目标</label><input id="goalInput" type="number" min="5" max="300" value="${db.dailyGoal}" /></div><button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="App.saveSettings()">保存设置</button></div><div class="notice">建议每天完成20—40道题，并定期导出备份。更换手机或清理Safari网站数据前，请先备份。</div><div class="panel"><strong style="font-size:13px">关于题库</strong><p style="font-size:11px;line-height:1.7;color:var(--muted)">版本1.0.0 · ${bank.questions.length}道单选题。资料来源：用户提供PDF第6—42页。部分内容的有效日期和时效性信息以原资料为准，未作外部核验。</p></div>`;}
+  function renderSettings(){return `<h1 class="page-title">设置</h1><p class="page-subtitle">调整每日目标，并管理本机学习数据。</p><div class="panel"><div class="settings-row"><label for="goalInput">每日刷题目标</label><input id="goalInput" type="number" min="5" max="300" value="${db.dailyGoal}" /></div><button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="App.saveSettings()">保存设置</button></div><div class="notice">建议每天完成20—40道题，并定期导出备份。更换手机或清理Safari网站数据前，请先备份。</div><div class="panel"><strong style="font-size:13px">关于题库</strong><p style="font-size:11px;line-height:1.7;color:var(--muted)">版本1.1.0 · ${bank.questions.length}道四选一选词填空。资料来源：用户提供PDF第6—42页。部分内容的有效日期和时效性信息以原资料为准，未作外部核验。</p></div>`;}
   function renderQuiz(){
     if(!session)return '<div class="empty"><b>没有正在进行的练习</b><button class="btn btn-primary" onclick="App.go(\'home\')">返回首页</button></div>';
     const q=session.questions[session.index];
@@ -127,11 +127,11 @@
     let feedback='';
     if(reveal){const ok=chosen===q.answer;feedback=`<div class="feedback ${ok?'good':'bad'}"><strong>${ok?'回答正确':'回答错误 · 正确答案：'+letters[q.answer]}</strong><div class="explanation">${esc(q.explanation)}</div></div>`;}
     return `<div class="q-top"><span class="pill">${esc(q.category)} · ${esc(q.section)}</span><button class="bookmark ${fav?'on':''}" onclick="App.toggleFavorite('${q.id}')">${fav?'★ 已收藏':'☆ 收藏'}</button></div>
-      <div class="progress-row"><small>${session.index+1} / ${session.questions.length}</small><div class="progress-track"><i style="width:${pct}%"></i></div><small>${session.mode==='exam'?'模拟考试':session.mode==='wrong'?'错题重练':'章节练习'}</small></div>
-      <section class="question-card"><div class="q-top"><span class="q-number">第${session.index+1}题 · ${q.difficulty||'基础'}</span><span class="q-number">PDF第${q.sourcePage}页</span></div>${session.mode==='exam'?`<div id="examTimer" style="font-size:11px;color:var(--red);font-weight:800;margin-top:8px">剩余时间 ${formatTime(session.timeLeft)}</div>`:''}<div class="q-text">${esc(q.question)}</div><div class="option-list">${optionHTML}</div>${feedback}
+      <div class="progress-row"><small>${session.index+1} / ${session.questions.length}</small><div class="progress-track"><i style="width:${pct}%"></i></div><small>${session.mode==='exam'?'模拟考试':session.mode==='wrong'?'错题重练':'选词填空练习'}</small></div>
+      <section class="question-card"><div class="q-top"><span class="q-number">第${session.index+1}题 · ${q.difficulty||'基础'}</span><span class="q-number">PDF第${q.sourcePage}页</span></div>${session.mode==='exam'?`<div id="examTimer" style="font-size:11px;color:var(--red);font-weight:800;margin-top:8px">剩余时间 ${formatTime(session.timeLeft)}</div>`:''}<div class="q-format">选词填空 · 单项选择</div><div class="q-text">${esc(q.question)}</div><div class="option-list">${optionHTML}</div>${feedback}
       <div class="q-actions"><button class="btn btn-outline" onclick="App.prev()" ${session.index===0?'disabled':''}>上一题</button>${session.mode==='exam'?`<button class="btn btn-primary" onclick="App.next()">${session.index===session.questions.length-1?'完成答题':'下一题'}</button>`:`<button class="btn btn-primary" onclick="App.next()" ${!answered?'disabled':''}>${session.index===session.questions.length-1?'完成练习':'下一题'}</button>`}</div>
       ${session.mode==='exam'?`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:13px"><span style="font-size:10px;color:var(--muted)">已作答 ${Object.keys(session.answers).length} / ${session.questions.length}</span><button class="btn btn-danger btn-small" onclick="App.finishExam()">交卷</button></div>`:''}
-      </section><div class="source-line">题库依据原资料整理；如需核对，请查看PDF第${q.sourcePage}页。</div>`;
+      </section><div class="source-line">题目已转为四选一选词填空；如需核对原始知识点，请查看PDF第${q.sourcePage}页。</div>`;
   }
   function renderExamResult(){
     if(!examResult)return '<div class="empty">暂无考试结果。</div>';
