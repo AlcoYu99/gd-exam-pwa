@@ -1,7 +1,7 @@
 {
   "name": "广东省考常识通",
   "short_name": "广东常识通",
-  "description": "广东省考常识离线刷题、错题复习与模拟考试",
+  "description": "广东省考常识四选一选词填空、错题复习与模拟考试",
   "lang": "zh-CN",
   "start_url": "./index.html",
   "scope": "./",
@@ -10,7 +10,17 @@
   "background_color": "#f4f6f9",
   "theme_color": "#142d4e",
   "icons": [
-    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
-    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
